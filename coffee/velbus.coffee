@@ -26,6 +26,7 @@ class Velbus extends EventEmitter
   constructor: ->
     @modules = {}
     @ready_to_send = false
+    @last_send = Date.now()
     @queue_length = 0
 
     # create serialport instance to send to the Velbus
@@ -61,10 +62,19 @@ class Velbus extends EventEmitter
           console.log 'Error draining serial port.' + data.toString 'hex'
           console.log error
           return
+      @last_send = Date.now()
       return
 
-  write_to_serial: (data, repeated) =>
-    # if Velbus is ready to receive
+  write_to_serial: (data, repeated = false) =>
+    # make sure there is at least 30 ms between each two requests
+    if (wait = (Date.now() - @last_send - 30)) < 0
+      setTimeout (
+        =>
+          @write_to_serial data, repeated
+          return
+      ), (-1 * wait)
+      return
+    # check if Velbus is ready to receive
     if @ready_to_send
       ready_to_send = false
       if repeated

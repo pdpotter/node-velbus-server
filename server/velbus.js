@@ -35,6 +35,7 @@
       this.write_to_serial = bind(this.write_to_serial, this);
       this.modules = {};
       this.ready_to_send = false;
+      this.last_send = Date.now();
       this.queue_length = 0;
       this.serialport = new serialport.SerialPort(Config.velbus.device, {
         baudrate: 38400
@@ -71,12 +72,24 @@
               console.log(error);
             }
           });
+          _this.last_send = Date.now();
         };
       })(this));
     };
 
     Velbus.prototype.write_to_serial = function(data, repeated) {
-      var ready_to_send, request;
+      var ready_to_send, request, wait;
+      if (repeated == null) {
+        repeated = false;
+      }
+      if ((wait = Date.now() - this.last_send - 30) < 0) {
+        setTimeout(((function(_this) {
+          return function() {
+            _this.write_to_serial(data, repeated);
+          };
+        })(this)), -1 * wait);
+        return;
+      }
       if (this.ready_to_send) {
         ready_to_send = false;
         if (repeated) {
