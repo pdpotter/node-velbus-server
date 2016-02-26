@@ -163,7 +163,7 @@
       }
       if (packet.address in this.modules) {
         if (this.modules[packet.address].initialized) {
-          message = this.modules[packet.address].decode(data);
+          message = this.modules[packet.address].decode(packet.data);
           this.emit('response', message);
           return;
         } else {

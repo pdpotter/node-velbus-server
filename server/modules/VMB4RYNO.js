@@ -19,14 +19,14 @@
     VMB4RYNO.prototype.decode = function(data) {
       var message;
       message = {
-        address: data[2].toString(16).toUpperCase()
+        address: this.address.toString(16).toUpperCase()
       };
-      if (data[4] === 0xFB) {
-        message.channel = this.constructor.decode_channel(data[5]);
-        if (data[7] === 0x00) {
+      if (data[0] === 0xFB) {
+        message.channel = this.constructor.decode_channel(data[1]);
+        if (data[3] === 0x00) {
           message.message = 'relay_channel_off';
         }
-        if (data[7] === 0x01) {
+        if (data[3] === 0x01) {
           message.message = 'relay_channel_on';
         }
       }

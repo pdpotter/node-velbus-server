@@ -159,7 +159,7 @@ class Velbus extends EventEmitter
     if packet.address of @modules
       # check if module is initialized
       if @modules[packet.address].initialized
-        message = @modules[packet.address].decode data
+        message = @modules[packet.address].decode packet.data
         @emit 'response', message
         return
       else

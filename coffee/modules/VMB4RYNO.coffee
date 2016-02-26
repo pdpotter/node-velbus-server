@@ -10,13 +10,13 @@ class VMB4RYNO extends Module
 
   decode: (data) ->
     message =
-      address: data[2].toString(16).toUpperCase()
+      address: @address.toString(16).toUpperCase()
     # COMMAND_RELAY_STATUS
-    if data[4] == 0xFB
-      message.channel = @constructor.decode_channel data[5]
-      if data[7] == 0x00
+    if data[0] == 0xFB
+      message.channel = @constructor.decode_channel data[1]
+      if data[3] == 0x00
         message.message = 'relay_channel_off'
-      if data[7] == 0x01
+      if data[3] == 0x01
         message.message = 'relay_channel_on'
     return message
 
