@@ -121,7 +121,7 @@ class Velbus extends EventEmitter
       console.log 'Command does not exist.'
 
     # send to Velbus
-    @modules[address][object.command](channel)
+    @modules[address][object.command](object)
     return
 
   process_response: (data) ->

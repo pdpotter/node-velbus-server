@@ -131,7 +131,7 @@
       if (!object.command in this.modules[address]) {
         console.log('Command does not exist.');
       }
-      this.modules[address][object.command](channel);
+      this.modules[address][object.command](object);
     };
 
     Velbus.prototype.process_response = function(data) {

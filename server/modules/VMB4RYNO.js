@@ -33,27 +33,27 @@
       return message;
     };
 
-    VMB4RYNO.prototype.switch_relay_off = function(channel) {
+    VMB4RYNO.prototype.switch_relay_off = function(data) {
       return this.send_packet({
         priority: 0xF8,
         rtr_data_size: 0x02,
-        data: [0x01, this.constructor.encode_channel(channel)]
+        data: [0x01, this.constructor.encode_channel(data.channel)]
       });
     };
 
-    VMB4RYNO.prototype.switch_relay_on = function(channel) {
+    VMB4RYNO.prototype.switch_relay_on = function(data) {
       return this.send_packet({
         priority: 0xF8,
         rtr_data_size: 0x02,
-        data: [0x02, this.constructor.encode_channel(channel)]
+        data: [0x02, this.constructor.encode_channel(data.channel)]
       });
     };
 
-    VMB4RYNO.prototype.relay_status_request = function(channel) {
+    VMB4RYNO.prototype.relay_status_request = function(data) {
       return this.send_packet({
         priority: 0xFB,
         rtr_data_size: 0x02,
-        data: [0xFA, this.constructor.encode_channel(channel)]
+        data: [0xFA, this.constructor.encode_channel(data.channel)]
       });
     };
 
