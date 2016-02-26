@@ -66,7 +66,7 @@ class Velbus extends EventEmitter
       return
 
   write_to_serial: (data, repeated = false) =>
-    # make sure there is at least 30 ms between each two requests
+    # make sure there is at least 30 ms between each two packets sent
     if (wait = (Date.now() - @last_send - 30)) < 0
       setTimeout (
         =>
