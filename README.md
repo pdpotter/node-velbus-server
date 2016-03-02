@@ -12,7 +12,8 @@ Using Raspbian Jessie Lite
 ([download](https://www.raspberrypi.org/downloads/raspbian/),
 [installation](https://www.raspberrypi.org/documentation/installation/installing-images/README.md),
 [expand filesystem](https://www.raspberrypi.org/documentation/configuration/raspi-config.md),
-[update](https://www.raspberrypi.org/documentation/raspbian/updating.md))
+[update](https://www.raspberrypi.org/documentation/raspbian/updating.md),
+[static IP address](https://pi-hole.net/faq/how-do-i-set-a-static-ip-address-in-raspbian-jessie-using-etcdhcpcd-conf/))
 
 ### Install node (LTS version)
 ```bash
