@@ -1,5 +1,5 @@
 (function() {
-  var Config, EventEmitter, Packet, Velbus, fs, i, len, module_file, module_files, module_name, path, protocols, serialport,
+  var Config, EventEmitter, Packet, Velbus, fs, i, len, module_file, module_files, module_name, path, protocols, serialport, sqlite3,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
@@ -7,6 +7,8 @@
   Config = require('./config');
 
   serialport = require('serialport');
+
+  sqlite3 = require('sqlite3');
 
   protocols = {
     Module: require('./module')
@@ -37,6 +39,7 @@
       this.ready_to_send = false;
       this.last_send = Date.now();
       this.queue_length = 0;
+      this.db = new sqlite3.Database(Config.database.file);
       this.serialport = new serialport.SerialPort(Config.velbus.device, {
         baudrate: 38400
       });
@@ -54,11 +57,12 @@
     Velbus.prototype.initialize_modules = function() {
       var address, j;
       for (address = j = 1; j < 255; address = ++j) {
-        this.modules[address] = new protocols.Module(this.write_to_serial, address);
+        this.modules[address] = new protocols.Module(this, address);
       }
     };
 
     Velbus.prototype.write_to_serial_helper = function(data) {
+      console.log(data);
       return this.serialport.write(data, (function(_this) {
         return function(error) {
           if (error) {
@@ -144,6 +148,7 @@
         }
         return;
       }
+      console.log(data);
       packet = new Packet(data);
       if (!packet.check()) {
         console.log('Invalid data received from Velbus ' + data.toString('hex'));
@@ -164,14 +169,13 @@
       if (packet.address in this.modules) {
         if (this.modules[packet.address].initialized) {
           message = this.modules[packet.address].decode(packet.data);
-          this.emit('response', message);
           return;
         } else {
           if (packet.data && packet.data[0] === 0xFF) {
             for (name in protocols) {
               module = protocols[name];
               if (module.module_type === packet.data[1]) {
-                this.modules[packet.address] = new protocols[name](this.write_to_serial, packet.address);
+                this.modules[packet.address] = new protocols[name](this, packet.address);
                 break;
               }
             }

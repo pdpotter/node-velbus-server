@@ -4,6 +4,9 @@ Config = require './config'
 # load library to communicate with the Velbus (over the serial port)
 serialport = require 'serialport'
 
+# load library to save data persistently
+sqlite3 = require 'sqlite3'
+
 # load general module protocols
 protocols =
   Module: require './module'
@@ -28,6 +31,7 @@ class Velbus extends EventEmitter
     @ready_to_send = false
     @last_send = Date.now()
     @queue_length = 0
+    @db = new sqlite3.Database Config.database.file
 
     # create serialport instance to send to the Velbus
     @serialport = new serialport.SerialPort(
@@ -47,10 +51,11 @@ class Velbus extends EventEmitter
     # 0x00 and 0xFF are reserved
     for address in [1...255]
       @modules[address]\
-        = new protocols.Module(@write_to_serial, address)
+        = new protocols.Module(this, address)
     return
 
   write_to_serial_helper: (data) ->
+    console.log data
     @serialport.write data, (error) =>
       if error
         console.log 'Error writing to serial port ' + data.toString 'hex'
@@ -132,6 +137,8 @@ class Velbus extends EventEmitter
         @process_response single
       return
 
+    console.log data
+
     # check data correctness
     packet = new Packet (data)
     if not packet.check()
@@ -160,7 +167,6 @@ class Velbus extends EventEmitter
       # check if module is initialized
       if @modules[packet.address].initialized
         message = @modules[packet.address].decode packet.data
-        @emit 'response', message
         return
       else
         # filter out module type requests
@@ -169,7 +175,7 @@ class Velbus extends EventEmitter
           for name, module of protocols
             if module.module_type == packet.data[1]
               @modules[packet.address]\
-                = new protocols[name](@write_to_serial, packet.address)
+                = new protocols[name](this, packet.address)
               break
           return
         else

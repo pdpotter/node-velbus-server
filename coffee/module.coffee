@@ -1,11 +1,17 @@
 # http://www.velleman.eu/downloads/0/velbus/manuals/protocol/protocol_vmb1usb.pdf
+
+# load library to emit events
+{EventEmitter} = require 'events'
+
+# load library to encod / decode packets
 Packet = require './packet'
 
 class Module
-  constructor: (write_to_serial, address) ->
-    @write_to_serial = write_to_serial
+  constructor: (velbus, address) ->
+    @velbus = velbus
     @address = address
     @initialized = false
+
     # detect modules (and their types) connected to the Velbus
     do @module_type_request
 
@@ -19,7 +25,7 @@ class Module
     data.address = @address
     buffer = new Packet(data).get_buffer()
 
-    @write_to_serial buffer
+    @velbus.write_to_serial buffer
     return
 
   module_type_request: ->

@@ -10,9 +10,8 @@
 
     VMB4DC.module_type = 0x12;
 
-    function VMB4DC(write_to_serial, address) {
-      this.write_to_serial = write_to_serial;
-      this.address = address;
+    function VMB4DC(velbus, address) {
+      VMB4DC.__super__.constructor.apply(this, arguments);
       this.initialized = true;
     }
 
@@ -26,12 +25,13 @@
         message.message = 'dimmercontroller_status';
         message.value = data[3];
         message.led_status = data[4];
+        this.velbus.emit('response', message);
       } else if (data[0] === 0x0F) {
         message.channel = this.constructor.decode_channel(data[1]);
         message.message = 'slider_status';
         message.value = data[2];
+        this.velbus.emit('response', message);
       }
-      return message;
     };
 
     VMB4DC.prototype.set_dim_channel_value = function(data) {

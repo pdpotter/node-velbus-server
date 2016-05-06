@@ -1,11 +1,13 @@
 (function() {
-  var Module, Packet;
+  var EventEmitter, Module, Packet;
+
+  EventEmitter = require('events').EventEmitter;
 
   Packet = require('./packet');
 
   Module = (function() {
-    function Module(write_to_serial, address) {
-      this.write_to_serial = write_to_serial;
+    function Module(velbus, address) {
+      this.velbus = velbus;
       this.address = address;
       this.initialized = false;
       this.module_type_request();
@@ -23,7 +25,7 @@
       var buffer;
       data.address = this.address;
       buffer = new Packet(data).get_buffer();
-      this.write_to_serial(buffer);
+      this.velbus.write_to_serial(buffer);
     };
 
     Module.prototype.module_type_request = function() {

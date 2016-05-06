@@ -3,9 +3,8 @@ Module = require '../module'
 class VMB4DC extends Module
   @module_type = 0x12
 
-  constructor: (write_to_serial, address) ->
-    @write_to_serial = write_to_serial
-    @address = address
+  constructor: (velbus, address) ->
+    super
     @initialized = true
 
   decode: (data) ->
@@ -17,12 +16,14 @@ class VMB4DC extends Module
       message.message = 'dimmercontroller_status'
       message.value = data[3]
       message.led_status = data[4]
+      @velbus.emit 'response', message
     # COMMAND_SLIDER_STATUS
     else if data[0] == 0x0F
       message.channel = @constructor.decode_channel data[1]
       message.message = 'slider_status'
       message.value = data[2]
-    return message
+      @velbus.emit 'response', message
+    return
 
   set_dim_channel_value: (data) ->
     @send_packet {

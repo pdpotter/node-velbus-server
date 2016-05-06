@@ -3,3 +3,6 @@ exports.velbus =
 
 exports.websocket =
   port: '8001'
+
+exports.database =
+  file: 'velbus.db'

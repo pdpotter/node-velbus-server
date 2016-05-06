@@ -3,9 +3,8 @@ Module = require '../module'
 class VMB4RYNO extends Module
   @module_type = 0x11
 
-  constructor: (write_to_serial, address) ->
-    @write_to_serial = write_to_serial
-    @address = address
+  constructor: (velbus, address) ->
+    super
     @initialized = true
 
   decode: (data) ->
@@ -16,9 +15,11 @@ class VMB4RYNO extends Module
       message.channel = @constructor.decode_channel data[1]
       if data[3] == 0x00
         message.message = 'relay_channel_off'
+        @velbus.emit 'response', message
       if data[3] == 0x01
         message.message = 'relay_channel_on'
-    return message
+        @velbus.emit 'response', message
+    return
 
   switch_relay_off: (data) ->
     @send_packet {

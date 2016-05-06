@@ -10,9 +10,8 @@
 
     VMB4RYNO.module_type = 0x11;
 
-    function VMB4RYNO(write_to_serial, address) {
-      this.write_to_serial = write_to_serial;
-      this.address = address;
+    function VMB4RYNO(velbus, address) {
+      VMB4RYNO.__super__.constructor.apply(this, arguments);
       this.initialized = true;
     }
 
@@ -25,12 +24,13 @@
         message.channel = this.constructor.decode_channel(data[1]);
         if (data[3] === 0x00) {
           message.message = 'relay_channel_off';
+          this.velbus.emit('response', message);
         }
         if (data[3] === 0x01) {
           message.message = 'relay_channel_on';
+          this.velbus.emit('response', message);
         }
       }
-      return message;
     };
 
     VMB4RYNO.prototype.switch_relay_off = function(data) {
