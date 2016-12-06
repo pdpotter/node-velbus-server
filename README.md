@@ -18,7 +18,7 @@ Using Raspbian Jessie Lite
 ### Install node (LTS version)
 ```bash
 # add nodejs repository
-sudo echo 'deb https://deb.nodesource.com/node_4.x jessie main' > /etc/apt/sources.list.d/nodesource.list
+echo 'deb https://deb.nodesource.com/node_4.x jessie main' | sudo tee --append /etc/apt/sources.list.d/nodesource.list
 # add nodejs repository key
 wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
 # enable https repositories
